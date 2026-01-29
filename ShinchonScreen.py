@@ -2,19 +2,19 @@ import streamlit as st
 import pandas as pd
 import os
 
-# 1. 앱 페이지 설정 (가장 상단)
+# 1. 앱 페이지 설정 (가장 상단 필수)
 st.set_page_config(page_title="신촌 스크린 골프 동호회", layout="wide", page_icon="⛳")
 
-# 2. 모바일용 스타일 최적화 (CSS)
+# 2. 모바일용 제목 크기 최적화 (CSS 추가)
 st.markdown("""
     <style>
-    /* 제목 글자 크기 조절: 스마트폰(640px 이하)에서 한 줄로 표시 */
+    /* 제목(h1) 크기를 스마트폰에서 한 줄로 보이게 조절 */
     @media (max-width: 640px) {
         .main h1 {
-            font-size: 1.3rem !important; /* 크기를 더 줄여 한 줄 유지 */
-            white-space: nowrap !important;
+            font-size: 1.4rem !important; /* 글자 크기 축소 */
+            white-space: nowrap !important; /* 줄바꿈 방지 */
             overflow: hidden;
-            text-overflow: ellipsis;
+            text-overflow: ellipsis; /* 너무 길면 끝부분 생략 */
         }
         .stMetric label { font-size: 0.8rem !important; }
         .stMetric div { font-size: 1.2rem !important; }
@@ -43,7 +43,7 @@ if 'golf_data' not in st.session_state:
 if 'admin_logged_in' not in st.session_state:
     st.session_state.admin_logged_in = False
 
-# 4. 사이드바 구성 (설정 및 로그인)
+# 4. 사이드바 구성 (변수 정의)
 with st.sidebar:
     st.title("⚙️ 설정 및 관리")
     
@@ -61,7 +61,7 @@ with st.sidebar:
 
     st.divider()
     
-    # [중요] 변수 정의 위치: 제목보다 먼저 정의되어야 함
+    # [중요] 제목에 쓰일 변수를 제목 코드보다 먼저 정의해야 에러가 나지 않습니다.
     view_year = st.selectbox("조회 연도", [f"{year}년" for year in range(2026, 2031)])
     view_month = st.selectbox("조회 월", [f"{i}월" for i in range(1, 13)])
 
@@ -88,7 +88,7 @@ with st.sidebar:
                     save_data(st.session_state.golf_data)
                     st.rerun()
 
-# 5. 메인 화면 출력 (변수 view_year, view_month 정의 이후에 위치)
+# 5. 메인 화면 출력 (변수 정의 이후에 위치)
 st.title(f"⛳ {view_year} {view_month} 리더보드")
 
 all_data = st.session_state.golf_data
@@ -124,7 +124,6 @@ if not df_filtered.empty:
         edit_cols = ['이름', '전월스코어', '전월불참', '당월스코어', '당월불참']
         edf = st.data_editor(df_filtered[edit_cols], use_container_width=True, hide_index=True)
         if not edf.equals(df_filtered[edit_cols]):
-            # 업데이트 로직 (간소화)
             for i, row in edf.iterrows():
                 idx = all_data[(all_data['연도']==view_year) & (all_data['월']==view_month) & (all_data['이름']==row['이름'])].index
                 all_data.loc[idx, edit_cols] = row.values
