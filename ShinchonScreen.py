@@ -5,32 +5,34 @@ import os
 # 1. 앱 페이지 설정
 st.set_page_config(page_title="신촌 스크린 골프 동호회", layout="wide", page_icon="⛳")
 
-# 2. 모바일용 제목 크기 최적화 (강력한 한 줄 고정 CSS)
+# 2. 초소형 모바일 제목 최적화 (한 줄 고정 강제 CSS)
 st.markdown("""
     <style>
-    /* 제목(h1) 스타일 강제 조정 */
+    /* 기본 제목 스타일: 줄바꿈 금지 및 넘칠 경우 생략(...) */
     .main h1 {
         white-space: nowrap !important;
         overflow: hidden;
         text-overflow: ellipsis;
+        display: block !important;
     }
 
-    /* 스마트폰(640px 이하) 전용 설정 */
+    /* 스마트폰(640px 이하) 전용 초소형 폰트 설정 */
     @media (max-width: 640px) {
         .main h1 {
-            font-size: 1.1rem !important; /* 글자 크기를 더 축소 */
-            letter-spacing: -0.05rem !important; /* 글자 간격을 좁힘 */
+            font-size: 0.95rem !important; /* 1.1rem에서 더 축소하여 확실히 한 줄 고정 */
+            letter-spacing: -0.07rem !important; /* 글자 사이 간격을 더 좁힘 */
+            margin-bottom: 0.5rem !important;
         }
-        /* 제목 앞 이모지 크기 조절 */
+        /* 제목 앞 이모지 크기 축소 */
         .main h1 span {
-            font-size: 1.1rem !important;
+            font-size: 0.95rem !important;
         }
-        /* 시상자 지표(Metric) 레이아웃 최적화 */
+        /* 시상자 정보(Metric) 크기 최적화 */
         [data-testid="stMetricValue"] {
-            font-size: 1.1rem !important;
+            font-size: 1.0rem !important;
         }
         [data-testid="stMetricLabel"] {
-            font-size: 0.75rem !important;
+            font-size: 0.7rem !important;
         }
     }
     </style>
@@ -70,6 +72,7 @@ with st.sidebar:
             st.rerun()
 
     st.divider()
+    # 제목에 쓰일 변수 정의
     view_year = st.selectbox("조회 연도", [f"{year}년" for year in range(2026, 2031)])
     view_month = st.selectbox("조회 월", [f"{i}월" for i in range(1, 13)])
 
@@ -96,7 +99,7 @@ with st.sidebar:
                     save_data(st.session_state.golf_data)
                     st.rerun()
 
-# 5. 메인 화면 출력 (제목 한 줄 고정)
+# 5. 메인 화면 출력 (한 줄 고정)
 st.title(f"⛳ {view_year} {view_month} 리더보드")
 
 all_data = st.session_state.golf_data
